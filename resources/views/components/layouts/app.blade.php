@@ -33,11 +33,11 @@
                     'bg-indigo-50 text-indigo-700' => request()->routeIs('jquery.productos.*'),
                     'text-slate-600 hover:bg-slate-100' => ! request()->routeIs('jquery.productos.*'),
                 ])><x-icono nombre="jquery" class="size-4" />Productos (jQuery)</a>
-                <a href="{{ route('reportes.index') }}" @class([
+                <a href="{{ route('categorias.index') }}" @class([
                     'inline-flex shrink-0 items-center gap-2 whitespace-nowrap rounded-md px-3 py-2',
-                    'bg-indigo-50 text-indigo-700' => request()->routeIs('reportes.*'),
-                    'text-slate-600 hover:bg-slate-100' => ! request()->routeIs('reportes.*'),
-                ])><x-icono nombre="reportes" class="size-4" />Reportes</a>
+                    'bg-indigo-50 text-indigo-700' => request()->routeIs('categorias.*'),
+                    'text-slate-600 hover:bg-slate-100' => ! request()->routeIs('categorias.*'),
+                ])><x-icono nombre="categoria" class="size-4" />Categorías</a>
             </nav>
         </div>
     </header>

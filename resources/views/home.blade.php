@@ -59,8 +59,8 @@
     <section class="mt-8 rounded-lg border border-slate-200 bg-white">
         <div class="flex items-center justify-between border-b border-slate-200 px-5 py-4">
             <h2 class="font-semibold text-slate-900">Últimos productos activos</h2>
-            <a href="{{ route('reportes.index') }}" class="text-sm font-medium text-indigo-600 hover:text-indigo-800">
-                Ver reporte por categoría
+            <a href="{{ route('categorias.index') }}" class="text-sm font-medium text-indigo-600 hover:text-indigo-800">
+                Ver categorías
             </a>
         </div>
 
@@ -79,7 +79,7 @@
                         <tr>
                             <td class="px-5 py-3 font-medium text-slate-900">{{ $producto->titulo }}</td>
                             <td class="px-5 py-3">
-                                <a href="{{ route('reportes.categoria', $producto->categoria) }}" class="text-indigo-600 hover:text-indigo-800">
+                                <a href="{{ route('productos.index', ['categoria' => $producto->categoria_id]) }}" class="text-indigo-600 hover:text-indigo-800">
                                     {{ $producto->categoria->nombre }}
                                 </a>
                             </td>

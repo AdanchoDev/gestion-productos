@@ -1,8 +1,8 @@
 <?php
 
+use App\Http\Controllers\CategoriaController;
 use App\Http\Controllers\HomeController;
 use App\Http\Controllers\ProductoController;
-use App\Http\Controllers\ReporteController;
 use App\Http\Controllers\TipoCambioController;
 use App\Livewire\GestionProductos;
 use Illuminate\Support\Facades\Route;
@@ -25,10 +25,7 @@ Route::controller(ProductoController::class)
         Route::delete('/{producto}', 'destroy')->name('destroy');
     });
 
-Route::controller(ReporteController::class)
-    ->prefix('reportes')
-    ->name('reportes.')
-    ->group(function () {
-        Route::get('/', 'index')->name('index');
-        Route::get('/categorias/{categoria}', 'categoria')->name('categoria');
-    });
+// CRUD clásico (MVC): cada acción es una petición completa que devuelve una vista o redirige.
+// resource registra las rutas estándar de un CRUD (index, create, store, edit, update, destroy);
+// se excluye show porque no hay página de detalle.
+Route::resource('categorias', CategoriaController::class)->except('show');
