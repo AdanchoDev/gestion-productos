@@ -86,7 +86,8 @@ class GestionProductos extends Component
 
         $this->mostrarFormulario = false;
 
-        session()->flash('mensaje', $esEdicion
+        // Evento de navegador que escucha el aviso hecho con Alpine en la vista
+        $this->dispatch('notificar', mensaje: $esEdicion
             ? "Producto «{$producto->titulo}» actualizado."
             : "Producto «{$producto->titulo}» creado.");
     }
@@ -106,7 +107,7 @@ class GestionProductos extends Component
             $this->previousPage();
         }
 
-        session()->flash('mensaje', "Producto «{$producto->titulo}» eliminado.");
+        $this->dispatch('notificar', mensaje: "Producto «{$producto->titulo}» eliminado.");
     }
 
     private function productos(): LengthAwarePaginator
