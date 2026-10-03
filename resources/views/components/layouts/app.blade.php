@@ -22,6 +22,11 @@
                     'bg-indigo-50 text-indigo-700' => request()->routeIs('home'),
                     'text-slate-600 hover:bg-slate-100' => ! request()->routeIs('home'),
                 ])>Inicio</a>
+                <a href="{{ route('productos.index') }}" @class([
+                    'rounded-md px-3 py-2',
+                    'bg-indigo-50 text-indigo-700' => request()->routeIs('productos.*'),
+                    'text-slate-600 hover:bg-slate-100' => ! request()->routeIs('productos.*'),
+                ])>Productos</a>
                 <a href="{{ route('reportes.index') }}" @class([
                     'rounded-md px-3 py-2',
                     'bg-indigo-50 text-indigo-700' => request()->routeIs('reportes.*'),
