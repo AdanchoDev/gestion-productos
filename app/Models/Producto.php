@@ -5,10 +5,15 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Validation\Rule;
 
 class Producto extends Model
 {
+    // Eliminado lógico: delete() llena deleted_at en lugar de borrar la fila,
+    // y todas las consultas del modelo omiten esos registros automáticamente
+    use SoftDeletes;
+
     public const ESTATUS_ACTIVO = 'activo';
 
     public const ESTATUS_INACTIVO = 'inactivo';
@@ -41,7 +46,8 @@ class Producto extends Model
         return [
             'titulo' => ['required', 'string', 'min:3', 'max:150'],
             'descripcion' => ['nullable', 'string', 'max:1000'],
-            'categoria_id' => ['required', Rule::exists('categorias', 'id')],
+            // withoutTrashed: no se puede asignar un producto a una categoría eliminada
+            'categoria_id' => ['required', Rule::exists('categorias', 'id')->withoutTrashed()],
             'estatus' => ['required', Rule::in(self::ESTATUS)],
             'precio' => ['required', 'numeric', 'min:0', 'max:99999999.99'],
         ];
