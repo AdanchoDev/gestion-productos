@@ -26,7 +26,12 @@
                     'rounded-md px-3 py-2',
                     'bg-indigo-50 text-indigo-700' => request()->routeIs('productos.*'),
                     'text-slate-600 hover:bg-slate-100' => ! request()->routeIs('productos.*'),
-                ])>Productos</a>
+                ])>Productos (Livewire)</a>
+                <a href="{{ route('jquery.productos.index') }}" @class([
+                    'rounded-md px-3 py-2',
+                    'bg-indigo-50 text-indigo-700' => request()->routeIs('jquery.productos.*'),
+                    'text-slate-600 hover:bg-slate-100' => ! request()->routeIs('jquery.productos.*'),
+                ])>Productos (jQuery)</a>
                 <a href="{{ route('reportes.index') }}" @class([
                     'rounded-md px-3 py-2',
                     'bg-indigo-50 text-indigo-700' => request()->routeIs('reportes.*'),
@@ -39,5 +44,7 @@
     <main class="mx-auto max-w-6xl px-4 py-8">
         {{ $slot }}
     </main>
+
+    @stack('scripts')
 </body>
 </html>

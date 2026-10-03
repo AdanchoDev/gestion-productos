@@ -1,0 +1,186 @@
+<x-layouts.app title="Productos (jQuery)">
+    {{-- Las URL viajan en atributos data-* para no escribir rutas fijas dentro del JavaScript --}}
+    <div id="crud-productos"
+        data-url-datos="{{ route('jquery.productos.datos') }}"
+        data-url-base="{{ route('jquery.productos.index') }}">
+
+        <div class="mb-6 flex flex-wrap items-end justify-between gap-4">
+            <div>
+                <h1 class="text-2xl font-semibold text-slate-900">Productos</h1>
+                <p class="mt-1 text-sm text-slate-500">El mismo CRUD en una vista Blade con jQuery y AJAX, sin recargar la página.</p>
+            </div>
+
+            <button type="button" id="btn-nuevo"
+                class="rounded-md bg-indigo-600 px-4 py-2 text-sm font-medium text-white hover:bg-indigo-700">
+                Nuevo producto
+            </button>
+        </div>
+
+        <div id="aviso" role="status" hidden
+            class="mb-4 flex items-center justify-between gap-4 rounded-md border px-4 py-3 text-sm">
+            <span id="aviso-texto"></span>
+            <button type="button" id="aviso-cerrar" class="font-medium" aria-label="Cerrar aviso">&times;</button>
+        </div>
+
+        <div class="mb-4 grid gap-3 rounded-lg border border-slate-200 bg-white p-4 sm:grid-cols-[1fr_auto_auto_auto]">
+            <div>
+                <label for="filtro-buscar" class="sr-only">Buscar</label>
+                <input id="filtro-buscar" type="search" placeholder="Buscar por título o descripción…"
+                    class="w-full rounded-md border border-slate-300 px-3 py-2 text-sm focus:border-indigo-500 focus:outline-none focus:ring-2 focus:ring-indigo-200">
+            </div>
+
+            <div>
+                <label for="filtro-categoria" class="sr-only">Categoría</label>
+                <select id="filtro-categoria"
+                    class="w-full rounded-md border border-slate-300 bg-white px-3 py-2 text-sm focus:border-indigo-500 focus:outline-none focus:ring-2 focus:ring-indigo-200">
+                    <option value="">Todas las categorías</option>
+                    @foreach ($categorias as $categoria)
+                        <option value="{{ $categoria->id }}">{{ $categoria->nombre }}</option>
+                    @endforeach
+                </select>
+            </div>
+
+            <div>
+                <label for="filtro-estatus" class="sr-only">Estatus</label>
+                <select id="filtro-estatus"
+                    class="w-full rounded-md border border-slate-300 bg-white px-3 py-2 text-sm focus:border-indigo-500 focus:outline-none focus:ring-2 focus:ring-indigo-200">
+                    <option value="">Todos los estatus</option>
+                    @foreach (\App\Models\Producto::ESTATUS as $opcion)
+                        <option value="{{ $opcion }}">{{ ucfirst($opcion) }}</option>
+                    @endforeach
+                </select>
+            </div>
+
+            <button type="button" id="btn-limpiar"
+                class="rounded-md border border-slate-300 px-3 py-2 text-sm font-medium text-slate-700 hover:bg-slate-100">
+                Limpiar
+            </button>
+        </div>
+
+        <div class="overflow-x-auto rounded-lg border border-slate-200 bg-white">
+            <table class="w-full text-left text-sm">
+                <thead class="bg-slate-50 text-xs uppercase tracking-wide text-slate-500">
+                    <tr>
+                        <th class="px-5 py-3 font-medium">Producto</th>
+                        <th class="px-5 py-3 font-medium">Categoría</th>
+                        <th class="px-5 py-3 font-medium">Estatus</th>
+                        <th class="px-5 py-3 text-right font-medium">Precio (MXN)</th>
+                        <th class="px-5 py-3 text-right font-medium">Acciones</th>
+                    </tr>
+                </thead>
+                {{-- Las filas las genera jQuery con la respuesta JSON --}}
+                <tbody id="tabla-productos" class="divide-y divide-slate-100">
+                    <tr>
+                        <td colspan="5" class="px-5 py-8 text-center text-slate-500">Cargando productos…</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+
+        <div class="mt-4 flex items-center justify-between text-sm text-slate-600">
+            <span id="paginacion-resumen"></span>
+            <div class="flex gap-2">
+                <button type="button" id="btn-anterior" disabled
+                    class="rounded-md border border-slate-300 bg-white px-3 py-1.5 font-medium hover:bg-slate-100 disabled:cursor-not-allowed disabled:opacity-50">Anterior</button>
+                <button type="button" id="btn-siguiente" disabled
+                    class="rounded-md border border-slate-300 bg-white px-3 py-1.5 font-medium hover:bg-slate-100 disabled:cursor-not-allowed disabled:opacity-50">Siguiente</button>
+            </div>
+        </div>
+
+        <div id="modal-formulario" hidden class="fixed inset-0 z-40 flex items-start justify-center overflow-y-auto p-4 sm:items-center"
+            role="dialog" aria-modal="true" aria-labelledby="modal-formulario-titulo">
+            <div class="fondo-modal fixed inset-0 bg-slate-900/50"></div>
+
+            <form id="form-producto" novalidate class="relative w-full max-w-xl rounded-lg bg-white p-6 shadow-xl">
+                <h2 id="modal-formulario-titulo" class="mb-4 text-lg font-semibold text-slate-900">Nuevo producto</h2>
+
+                <input type="hidden" id="producto-id">
+
+                <div class="grid gap-4 sm:grid-cols-2">
+                    <div class="sm:col-span-2">
+                        <label for="titulo" class="mb-1 block text-sm font-medium text-slate-700">Título</label>
+                        <input id="titulo" name="titulo" type="text" maxlength="150"
+                            class="campo w-full rounded-md border border-slate-300 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-200">
+                        <p class="error mt-1 text-sm text-red-600" data-error="titulo" hidden></p>
+                    </div>
+
+                    <div class="sm:col-span-2">
+                        <div class="mb-1 flex items-baseline justify-between">
+                            <label for="descripcion" class="block text-sm font-medium text-slate-700">Descripción <span class="font-normal text-slate-400">(opcional)</span></label>
+                            <span id="contador-descripcion" class="text-xs tabular-nums text-slate-400">0 / 1000</span>
+                        </div>
+                        <textarea id="descripcion" name="descripcion" rows="3"
+                            class="campo w-full rounded-md border border-slate-300 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-200"></textarea>
+                        <p class="error mt-1 text-sm text-red-600" data-error="descripcion" hidden></p>
+                    </div>
+
+                    <div>
+                        <label for="categoria_id" class="mb-1 block text-sm font-medium text-slate-700">Categoría</label>
+                        <select id="categoria_id" name="categoria_id"
+                            class="campo w-full rounded-md border border-slate-300 bg-white px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-200">
+                            <option value="">Selecciona…</option>
+                            @foreach ($categorias as $categoria)
+                                <option value="{{ $categoria->id }}">{{ $categoria->nombre }}</option>
+                            @endforeach
+                        </select>
+                        <p class="error mt-1 text-sm text-red-600" data-error="categoria_id" hidden></p>
+                    </div>
+
+                    <div>
+                        <label for="estatus" class="mb-1 block text-sm font-medium text-slate-700">Estatus</label>
+                        <select id="estatus" name="estatus"
+                            class="campo w-full rounded-md border border-slate-300 bg-white px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-200">
+                            @foreach (\App\Models\Producto::ESTATUS as $opcion)
+                                <option value="{{ $opcion }}">{{ ucfirst($opcion) }}</option>
+                            @endforeach
+                        </select>
+                        <p class="error mt-1 text-sm text-red-600" data-error="estatus" hidden></p>
+                    </div>
+
+                    <div>
+                        <label for="precio" class="mb-1 block text-sm font-medium text-slate-700">Precio (MXN)</label>
+                        <input id="precio" name="precio" type="number" step="0.01" min="0" inputmode="decimal"
+                            class="campo w-full rounded-md border border-slate-300 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-200">
+                        <p class="error mt-1 text-sm text-red-600" data-error="precio" hidden></p>
+                    </div>
+                </div>
+
+                <div class="mt-6 flex items-center justify-end gap-2">
+                    <button type="button" class="btn-cancelar rounded-md border border-slate-300 px-4 py-2 text-sm font-medium text-slate-700 hover:bg-slate-100">
+                        Cancelar
+                    </button>
+                    <button type="submit" id="btn-guardar"
+                        class="rounded-md bg-indigo-600 px-4 py-2 text-sm font-medium text-white hover:bg-indigo-700 disabled:opacity-60">
+                        Guardar
+                    </button>
+                </div>
+            </form>
+        </div>
+
+        <div id="modal-eliminar" hidden class="fixed inset-0 z-50 flex items-center justify-center p-4"
+            role="alertdialog" aria-modal="true" aria-labelledby="modal-eliminar-titulo">
+            <div class="fondo-modal fixed inset-0 bg-slate-900/50"></div>
+
+            <div class="relative w-full max-w-md rounded-lg bg-white p-6 shadow-xl">
+                <h2 id="modal-eliminar-titulo" class="text-lg font-semibold text-slate-900">Eliminar producto</h2>
+                <p class="mt-2 text-sm text-slate-600">
+                    ¿Eliminar <strong id="eliminar-nombre" class="text-slate-900"></strong>? Esta acción no se puede deshacer.
+                </p>
+
+                <div class="mt-6 flex justify-end gap-2">
+                    <button type="button" class="btn-cancelar rounded-md border border-slate-300 px-4 py-2 text-sm font-medium text-slate-700 hover:bg-slate-100">
+                        Cancelar
+                    </button>
+                    <button type="button" id="btn-confirmar-eliminar"
+                        class="rounded-md bg-red-600 px-4 py-2 text-sm font-medium text-white hover:bg-red-700 disabled:opacity-60">
+                        Sí, eliminar
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    @push('scripts')
+        @vite('resources/js/productos-jquery.js')
+    @endpush
+</x-layouts.app>
