@@ -92,38 +92,43 @@
         <table class="w-full text-left text-sm">
             <thead class="bg-slate-50 text-xs uppercase tracking-wide text-slate-500">
                 <tr>
-                    <th class="px-5 py-3 font-medium">Producto</th>
-                    <th class="px-5 py-3 font-medium">Categoría</th>
-                    <th class="px-5 py-3 font-medium">Estatus</th>
-                    <th class="px-5 py-3 text-right font-medium">Precio (MXN)</th>
-                    <th class="px-5 py-3 text-right font-medium">Acciones</th>
+                    <th class="px-3 py-3 sm:px-5 font-medium">Producto</th>
+                    <th class="hidden px-3 py-3 font-medium sm:table-cell sm:px-5">Categoría</th>
+                    <th class="hidden px-3 py-3 font-medium sm:table-cell sm:px-5">Estatus</th>
+                    <th class="px-3 py-3 text-right font-medium sm:px-5">Precio<span class="hidden sm:inline"> (MXN)</span></th>
+                    <th class="px-3 py-3 text-right font-medium sm:px-5"><span class="sr-only sm:not-sr-only">Acciones</span></th>
                 </tr>
             </thead>
             <tbody class="divide-y divide-slate-100">
                 @forelse ($productos as $producto)
                     <tr wire:key="producto-{{ $producto->id }}">
-                        <td class="px-5 py-3">
+                        <td class="px-3 py-3 sm:px-5">
                             <div class="font-medium text-slate-900">{{ $producto->titulo }}</div>
                             <div class="text-slate-500">{{ $producto->descripcion }}</div>
+                            {{-- En celular las columnas Categoría y Estatus se ocultan y su contenido se muestra aquí --}}
+                            <div class="mt-1.5 flex flex-wrap items-center gap-2 sm:hidden">
+                                <x-estatus-badge :estatus="$producto->estatus" />
+                                <span class="text-xs text-slate-500">{{ $producto->categoria->nombre }}</span>
+                            </div>
                         </td>
-                        <td class="px-5 py-3">{{ $producto->categoria->nombre }}</td>
-                        <td class="px-5 py-3"><x-estatus-badge :estatus="$producto->estatus" /></td>
-                        <td class="px-5 py-3 text-right tabular-nums">
+                        <td class="hidden px-3 py-3 sm:table-cell sm:px-5">{{ $producto->categoria->nombre }}</td>
+                        <td class="hidden px-3 py-3 sm:table-cell sm:px-5"><x-estatus-badge :estatus="$producto->estatus" /></td>
+                        <td class="px-3 py-3 sm:px-5 text-right tabular-nums">
                             <div>${{ number_format($producto->precio, 2) }}</div>
                             @if (($precioUsd = $tipoCambio->convertirAUsd($producto->precio)) !== null)
                                 <div class="text-xs text-slate-500">≈ ${{ number_format($precioUsd, 2) }} USD</div>
                             @endif
                         </td>
-                        <td class="whitespace-nowrap px-5 py-3 text-right">
+                        <td class="whitespace-nowrap px-3 py-3 sm:px-5 text-right">
                             {{-- Botones solo con icono: el texto queda oculto para lectores de pantalla y como tooltip --}}
                             <button type="button" x-on:click="$wire.editar({{ $producto->id }})" title="Editar"
-                                class="inline-flex rounded-md p-2 text-indigo-600 hover:bg-indigo-50 hover:text-indigo-800">
+                                class="inline-flex rounded-md p-1.5 sm:p-2 text-indigo-600 hover:bg-indigo-50 hover:text-indigo-800">
                                 <x-icono nombre="editar" />
                                 <span class="sr-only">Editar {{ $producto->titulo }}</span>
                             </button>
                             <button type="button" title="Eliminar"
                                 x-on:click="porEliminar = { abierto: true, id: {{ $producto->id }}, titulo: @js($producto->titulo) }"
-                                class="inline-flex rounded-md p-2 text-red-600 hover:bg-red-50 hover:text-red-800">
+                                class="inline-flex rounded-md p-1.5 sm:p-2 text-red-600 hover:bg-red-50 hover:text-red-800">
                                 <x-icono nombre="eliminar" />
                                 <span class="sr-only">Eliminar {{ $producto->titulo }}</span>
                             </button>
@@ -131,7 +136,7 @@
                     </tr>
                 @empty
                     <tr>
-                        <td colspan="5" class="px-5 py-8 text-center text-slate-500">
+                        <td colspan="5" class="px-3 py-8 sm:px-5 text-center text-slate-500">
                             No se encontraron productos con los filtros seleccionados.
                         </td>
                     </tr>

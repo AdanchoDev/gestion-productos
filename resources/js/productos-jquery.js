@@ -64,7 +64,7 @@ $(function () {
         if (productos.length === 0) {
             $tabla.append(
                 $('<tr>').append(
-                    $('<td colspan="5" class="px-5 py-8 text-center text-slate-500">').text(
+                    $('<td colspan="5" class="px-3 py-8 sm:px-5 text-center text-slate-500">').text(
                         'No se encontraron productos con los filtros seleccionados.'
                     )
                 )
@@ -78,22 +78,27 @@ $(function () {
 
             const $fila = $('<tr>').attr('data-id', producto.id);
 
-            $('<td class="px-5 py-3">')
+            const crearEtiquetaEstatus = () =>
+                $('<span class="inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-medium">')
+                    .addClass(activo ? 'bg-emerald-100 text-emerald-800' : 'bg-slate-200 text-slate-700')
+                    .text(activo ? 'Activo' : 'Inactivo');
+
+            $('<td class="px-3 py-3 sm:px-5">')
                 .append($('<div class="font-medium text-slate-900">').text(producto.titulo))
                 .append($('<div class="text-slate-500">').text(producto.descripcion ?? ''))
-                .appendTo($fila);
-
-            $('<td class="px-5 py-3">').text(producto.categoria).appendTo($fila);
-
-            $('<td class="px-5 py-3">')
+                // En celular las columnas Categoría y Estatus se ocultan y su contenido se muestra aquí
                 .append(
-                    $('<span class="inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-medium">')
-                        .addClass(activo ? 'bg-emerald-100 text-emerald-800' : 'bg-slate-200 text-slate-700')
-                        .text(activo ? 'Activo' : 'Inactivo')
+                    $('<div class="mt-1.5 flex flex-wrap items-center gap-2 sm:hidden">')
+                        .append(crearEtiquetaEstatus())
+                        .append($('<span class="text-xs text-slate-500">').text(producto.categoria))
                 )
                 .appendTo($fila);
 
-            const $precio = $('<td class="px-5 py-3 text-right tabular-nums">')
+            $('<td class="hidden px-3 py-3 sm:table-cell sm:px-5">').text(producto.categoria).appendTo($fila);
+
+            $('<td class="hidden px-3 py-3 sm:table-cell sm:px-5">').append(crearEtiquetaEstatus()).appendTo($fila);
+
+            const $precio = $('<td class="px-3 py-3 sm:px-5 text-right tabular-nums">')
                 .append($('<div>').text(formatoPrecio(producto.precio)))
                 .appendTo($fila);
 
@@ -102,7 +107,7 @@ $(function () {
                 $precio.append($('<div class="text-xs text-slate-500">').text(`≈ ${formatoPrecio(producto.precio_usd)} USD`));
             }
 
-            $('<td class="whitespace-nowrap px-5 py-3 text-right">')
+            $('<td class="whitespace-nowrap px-3 py-3 sm:px-5 text-right">')
                 .append(
                     botonAccion('editar', 'Editar', producto.titulo)
                         .addClass('btn-editar text-indigo-600 hover:bg-indigo-50 hover:text-indigo-800')
@@ -121,7 +126,7 @@ $(function () {
     function botonAccion(icono, etiqueta, titulo) {
         const plantilla = document.getElementById(`plantilla-icono-${icono}`);
 
-        return $('<button type="button" class="inline-flex rounded-md p-2">')
+        return $('<button type="button" class="inline-flex rounded-md p-1.5 sm:p-2">')
             .attr('title', etiqueta)
             .append(plantilla.content.cloneNode(true))
             .append($('<span class="sr-only">').text(`${etiqueta} ${titulo}`));

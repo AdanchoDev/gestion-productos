@@ -70,17 +70,17 @@
             <table class="w-full text-left text-sm">
                 <thead class="bg-slate-50 text-xs uppercase tracking-wide text-slate-500">
                     <tr>
-                        <th class="px-5 py-3 font-medium">Producto</th>
-                        <th class="px-5 py-3 font-medium">Categoría</th>
-                        <th class="px-5 py-3 font-medium">Estatus</th>
-                        <th class="px-5 py-3 text-right font-medium">Precio (MXN)</th>
-                        <th class="px-5 py-3 text-right font-medium">Acciones</th>
+                        <th class="px-3 py-3 sm:px-5 font-medium">Producto</th>
+                        <th class="hidden px-3 py-3 font-medium sm:table-cell sm:px-5">Categoría</th>
+                        <th class="hidden px-3 py-3 font-medium sm:table-cell sm:px-5">Estatus</th>
+                        <th class="px-3 py-3 text-right font-medium sm:px-5">Precio<span class="hidden sm:inline"> (MXN)</span></th>
+                        <th class="px-3 py-3 text-right font-medium sm:px-5"><span class="sr-only sm:not-sr-only">Acciones</span></th>
                     </tr>
                 </thead>
                 {{-- Las filas las genera jQuery con la respuesta JSON --}}
                 <tbody id="tabla-productos" class="divide-y divide-slate-100">
                     <tr>
-                        <td colspan="5" class="px-5 py-8 text-center text-slate-500">Cargando productos…</td>
+                        <td colspan="5" class="px-3 py-8 sm:px-5 text-center text-slate-500">Cargando productos…</td>
                     </tr>
                 </tbody>
             </table>
