@@ -6,19 +6,19 @@
 
     <dl class="grid grid-cols-2 gap-4 lg:grid-cols-4">
         <div class="rounded-lg border border-slate-200 bg-white p-5">
-            <dt class="text-sm text-slate-500">Categorías</dt>
+            <dt class="flex items-center gap-2 text-sm text-slate-500"><x-icono nombre="categoria" class="size-4" />Categorías</dt>
             <dd class="mt-1 text-2xl font-semibold tabular-nums text-slate-900">{{ $indicadores['categorias'] }}</dd>
         </div>
         <div class="rounded-lg border border-slate-200 bg-white p-5">
-            <dt class="text-sm text-slate-500">Productos activos</dt>
+            <dt class="flex items-center gap-2 text-sm text-slate-500"><x-icono nombre="exito" class="size-4 text-emerald-600" />Productos activos</dt>
             <dd class="mt-1 text-2xl font-semibold tabular-nums text-slate-900">{{ $indicadores['activos'] }}</dd>
         </div>
         <div class="rounded-lg border border-slate-200 bg-white p-5">
-            <dt class="text-sm text-slate-500">Productos inactivos</dt>
+            <dt class="flex items-center gap-2 text-sm text-slate-500"><x-icono nombre="inactivo" class="size-4" />Productos inactivos</dt>
             <dd class="mt-1 text-2xl font-semibold tabular-nums text-slate-900">{{ $indicadores['inactivos'] }}</dd>
         </div>
         <div class="rounded-lg border border-slate-200 bg-white p-5">
-            <dt class="text-sm text-slate-500">Valor del catálogo activo</dt>
+            <dt class="flex items-center gap-2 text-sm text-slate-500"><x-icono nombre="dinero" class="size-4" />Valor del catálogo activo</dt>
             <dd class="mt-1 text-2xl font-semibold tabular-nums text-slate-900">${{ number_format($indicadores['valor_activo'], 2) }} MXN</dd>
             @if ($valorActivoUsd !== null)
                 <dd class="mt-1 text-sm tabular-nums text-slate-500">≈ ${{ number_format($valorActivoUsd, 2) }} USD</dd>
@@ -34,7 +34,7 @@
 
     <section class="mt-6 flex flex-wrap items-center justify-between gap-4 rounded-lg border border-slate-200 bg-white p-5">
         <div>
-            <h2 class="text-sm text-slate-500">Tipo de cambio USD/MXN</h2>
+            <h2 class="flex items-center gap-2 text-sm text-slate-500"><x-icono nombre="dolar" class="size-4" />Tipo de cambio USD/MXN</h2>
             @if ($tipoCambio)
                 <p class="mt-1 text-2xl font-semibold tabular-nums text-slate-900">1 USD = ${{ number_format($tipoCambio['tasa'], 4) }} MXN</p>
                 <p class="mt-1 text-sm text-slate-500">
@@ -49,7 +49,8 @@
 
         <form method="POST" action="{{ route('tipo-cambio.actualizar') }}">
             @csrf
-            <button type="submit" class="rounded-md border border-slate-300 px-4 py-2 text-sm font-medium text-slate-700 hover:bg-slate-100">
+            <button type="submit" class="inline-flex items-center gap-2 rounded-md border border-slate-300 px-4 py-2 text-sm font-medium text-slate-700 hover:bg-slate-100">
+                <x-icono nombre="actualizar" class="size-4" />
                 Actualizar ahora
             </button>
         </form>

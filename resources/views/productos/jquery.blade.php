@@ -11,22 +11,30 @@
             </div>
 
             <button type="button" id="btn-nuevo"
-                class="rounded-md bg-indigo-600 px-4 py-2 text-sm font-medium text-white hover:bg-indigo-700">
+                class="inline-flex items-center gap-2 rounded-md bg-indigo-600 px-4 py-2 text-sm font-medium text-white hover:bg-indigo-700">
+                <x-icono nombre="agregar" />
                 Nuevo producto
             </button>
         </div>
 
         <div id="aviso" role="status" hidden
             class="mb-4 flex items-center justify-between gap-4 rounded-md border px-4 py-3 text-sm">
-            <span id="aviso-texto"></span>
-            <button type="button" id="aviso-cerrar" class="font-medium" aria-label="Cerrar aviso">&times;</button>
+            <span class="flex items-center gap-2">
+                <x-icono nombre="exito" id="aviso-icono-exito" />
+                <x-icono nombre="error" id="aviso-icono-error" />
+                <span id="aviso-texto"></span>
+            </span>
+            <button type="button" id="aviso-cerrar" aria-label="Cerrar aviso">
+                <x-icono nombre="cerrar" class="size-4" />
+            </button>
         </div>
 
         <div class="mb-4 grid gap-3 rounded-lg border border-slate-200 bg-white p-4 sm:grid-cols-[1fr_auto_auto_auto]">
-            <div>
+            <div class="relative">
                 <label for="filtro-buscar" class="sr-only">Buscar</label>
+                <x-icono nombre="buscar" class="pointer-events-none absolute left-3 top-1/2 size-4 -translate-y-1/2 text-slate-400" />
                 <input id="filtro-buscar" type="search" placeholder="Buscar por título o descripción…"
-                    class="w-full rounded-md border border-slate-300 px-3 py-2 text-sm focus:border-indigo-500 focus:outline-none focus:ring-2 focus:ring-indigo-200">
+                    class="w-full rounded-md border border-slate-300 py-2 pl-9 pr-3 text-sm focus:border-indigo-500 focus:outline-none focus:ring-2 focus:ring-indigo-200">
             </div>
 
             <div>
@@ -52,7 +60,8 @@
             </div>
 
             <button type="button" id="btn-limpiar"
-                class="rounded-md border border-slate-300 px-3 py-2 text-sm font-medium text-slate-700 hover:bg-slate-100">
+                class="inline-flex items-center justify-center gap-2 rounded-md border border-slate-300 px-3 py-2 text-sm font-medium text-slate-700 hover:bg-slate-100">
+                <x-icono nombre="cerrar" class="size-4 text-slate-500" />
                 Limpiar
             </button>
         </div>
@@ -81,9 +90,15 @@
             <span id="paginacion-resumen"></span>
             <div class="flex gap-2">
                 <button type="button" id="btn-anterior" disabled
-                    class="rounded-md border border-slate-300 bg-white px-3 py-1.5 font-medium hover:bg-slate-100 disabled:cursor-not-allowed disabled:opacity-50">Anterior</button>
+                    class="inline-flex items-center gap-1 rounded-md border border-slate-300 bg-white py-1.5 pl-2 pr-3 font-medium hover:bg-slate-100 disabled:cursor-not-allowed disabled:opacity-50">
+                    <x-icono nombre="anterior" class="size-4" />
+                    Anterior
+                </button>
                 <button type="button" id="btn-siguiente" disabled
-                    class="rounded-md border border-slate-300 bg-white px-3 py-1.5 font-medium hover:bg-slate-100 disabled:cursor-not-allowed disabled:opacity-50">Siguiente</button>
+                    class="inline-flex items-center gap-1 rounded-md border border-slate-300 bg-white py-1.5 pl-3 pr-2 font-medium hover:bg-slate-100 disabled:cursor-not-allowed disabled:opacity-50">
+                    Siguiente
+                    <x-icono nombre="siguiente" class="size-4" />
+                </button>
             </div>
         </div>
 
@@ -162,10 +177,17 @@
             <div class="fondo-modal fixed inset-0 bg-slate-900/50"></div>
 
             <div class="relative w-full max-w-md rounded-lg bg-white p-6 shadow-xl">
-                <h2 id="modal-eliminar-titulo" class="text-lg font-semibold text-slate-900">Eliminar producto</h2>
-                <p class="mt-2 text-sm text-slate-600">
-                    ¿Eliminar <strong id="eliminar-nombre" class="text-slate-900"></strong>? Esta acción no se puede deshacer.
-                </p>
+                <div class="flex gap-4">
+                    <span class="flex size-10 shrink-0 items-center justify-center rounded-full bg-red-100 text-red-600">
+                        <x-icono nombre="advertencia" />
+                    </span>
+                    <div>
+                        <h2 id="modal-eliminar-titulo" class="text-lg font-semibold text-slate-900">Eliminar producto</h2>
+                        <p class="mt-1 text-sm text-slate-600">
+                            ¿Eliminar <strong id="eliminar-nombre" class="text-slate-900"></strong>? Esta acción no se puede deshacer.
+                        </p>
+                    </div>
+                </div>
 
                 <div class="mt-6 flex justify-end gap-2">
                     <button type="button" class="btn-cancelar rounded-md border border-slate-300 px-4 py-2 text-sm font-medium text-slate-700 hover:bg-slate-100">
@@ -179,6 +201,10 @@
             </div>
         </div>
     </div>
+
+    {{-- Las filas las arma jQuery, así que los iconos de las acciones se dejan aquí para que el script los clone --}}
+    <template id="plantilla-icono-editar"><x-icono nombre="editar" /></template>
+    <template id="plantilla-icono-eliminar"><x-icono nombre="eliminar" /></template>
 
     @push('scripts')
         @vite('resources/js/productos-jquery.js')

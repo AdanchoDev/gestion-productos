@@ -103,12 +103,28 @@ $(function () {
             }
 
             $('<td class="whitespace-nowrap px-5 py-3 text-right">')
-                .append($('<button type="button" class="btn-editar font-medium text-indigo-600 hover:text-indigo-800">').text('Editar'))
-                .append($('<button type="button" class="btn-eliminar ml-3 font-medium text-red-600 hover:text-red-800">').text('Eliminar'))
+                .append(
+                    botonAccion('editar', 'Editar', producto.titulo)
+                        .addClass('btn-editar text-indigo-600 hover:bg-indigo-50 hover:text-indigo-800')
+                )
+                .append(
+                    botonAccion('eliminar', 'Eliminar', producto.titulo)
+                        .addClass('btn-eliminar text-red-600 hover:bg-red-50 hover:text-red-800')
+                )
                 .appendTo($fila);
 
             $tabla.append($fila);
         });
+    }
+
+    // Botón solo con icono: clona el SVG de la plantilla de la vista y deja el texto para lectores de pantalla
+    function botonAccion(icono, etiqueta, titulo) {
+        const plantilla = document.getElementById(`plantilla-icono-${icono}`);
+
+        return $('<button type="button" class="inline-flex rounded-md p-2">')
+            .attr('title', etiqueta)
+            .append(plantilla.content.cloneNode(true))
+            .append($('<span class="sr-only">').text(`${etiqueta} ${titulo}`));
     }
 
     function pintarPaginacion(total) {
@@ -353,6 +369,8 @@ $(function () {
         const error = tipo === 'error';
 
         $('#aviso-texto').text(mensaje);
+        $('#aviso-icono-exito').toggleClass('hidden', error);
+        $('#aviso-icono-error').toggleClass('hidden', !error);
         $('#aviso')
             .toggleClass('border-emerald-200 bg-emerald-50 text-emerald-800', !error)
             .toggleClass('border-red-200 bg-red-50 text-red-800', error)

@@ -11,32 +11,33 @@
 </head>
 <body class="min-h-screen bg-slate-50 text-slate-800 antialiased">
     <header class="border-b border-slate-200 bg-white">
-        <div class="mx-auto flex max-w-6xl items-center justify-between gap-6 px-4 py-4">
+        {{-- En pantallas chicas el menú pasa debajo del título y sus enlaces se acomodan en dos renglones --}}
+        <div class="mx-auto flex max-w-6xl flex-col gap-2 px-4 py-3 sm:flex-row sm:items-center sm:justify-between sm:gap-6 sm:py-4">
             <a href="{{ route('home') }}" class="text-lg font-semibold text-slate-900">
                 {{ config('app.name') }}
             </a>
 
-            <nav class="flex items-center gap-1 text-sm font-medium">
+            <nav class="-mx-3 flex flex-wrap items-center gap-1 text-sm font-medium sm:mx-0" aria-label="Principal">
                 <a href="{{ route('home') }}" @class([
-                    'rounded-md px-3 py-2',
+                    'inline-flex shrink-0 items-center gap-2 whitespace-nowrap rounded-md px-3 py-2',
                     'bg-indigo-50 text-indigo-700' => request()->routeIs('home'),
                     'text-slate-600 hover:bg-slate-100' => ! request()->routeIs('home'),
-                ])>Inicio</a>
+                ])><x-icono nombre="inicio" class="size-4" />Inicio</a>
                 <a href="{{ route('productos.index') }}" @class([
-                    'rounded-md px-3 py-2',
+                    'inline-flex shrink-0 items-center gap-2 whitespace-nowrap rounded-md px-3 py-2',
                     'bg-indigo-50 text-indigo-700' => request()->routeIs('productos.*'),
                     'text-slate-600 hover:bg-slate-100' => ! request()->routeIs('productos.*'),
-                ])>Productos (Livewire)</a>
+                ])><x-icono nombre="livewire" class="size-4" />Productos (Livewire)</a>
                 <a href="{{ route('jquery.productos.index') }}" @class([
-                    'rounded-md px-3 py-2',
+                    'inline-flex shrink-0 items-center gap-2 whitespace-nowrap rounded-md px-3 py-2',
                     'bg-indigo-50 text-indigo-700' => request()->routeIs('jquery.productos.*'),
                     'text-slate-600 hover:bg-slate-100' => ! request()->routeIs('jquery.productos.*'),
-                ])>Productos (jQuery)</a>
+                ])><x-icono nombre="jquery" class="size-4" />Productos (jQuery)</a>
                 <a href="{{ route('reportes.index') }}" @class([
-                    'rounded-md px-3 py-2',
+                    'inline-flex shrink-0 items-center gap-2 whitespace-nowrap rounded-md px-3 py-2',
                     'bg-indigo-50 text-indigo-700' => request()->routeIs('reportes.*'),
                     'text-slate-600 hover:bg-slate-100' => ! request()->routeIs('reportes.*'),
-                ])>Reportes</a>
+                ])><x-icono nombre="reportes" class="size-4" />Reportes</a>
             </nav>
         </div>
     </header>

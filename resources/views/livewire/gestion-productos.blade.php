@@ -7,7 +7,8 @@
         </div>
 
         <button type="button" x-on:click="$wire.crear()"
-            class="rounded-md bg-indigo-600 px-4 py-2 text-sm font-medium text-white hover:bg-indigo-700">
+            class="inline-flex items-center gap-2 rounded-md bg-indigo-600 px-4 py-2 text-sm font-medium text-white hover:bg-indigo-700">
+            <x-icono nombre="agregar" />
             Nuevo producto
         </button>
     </div>
@@ -22,16 +23,22 @@
         "
         x-show="visible" x-transition x-cloak role="status"
         class="mb-4 flex items-center justify-between gap-4 rounded-md border border-emerald-200 bg-emerald-50 px-4 py-3 text-sm text-emerald-800">
-        <span x-text="mensaje"></span>
-        <button type="button" x-on:click="visible = false" class="font-medium hover:text-emerald-950" aria-label="Cerrar aviso">&times;</button>
+        <span class="flex items-center gap-2">
+            <x-icono nombre="exito" />
+            <span x-text="mensaje"></span>
+        </span>
+        <button type="button" x-on:click="visible = false" class="hover:text-emerald-950" aria-label="Cerrar aviso">
+            <x-icono nombre="cerrar" class="size-4" />
+        </button>
     </div>
 
     <div class="mb-4 grid gap-3 rounded-lg border border-slate-200 bg-white p-4 sm:grid-cols-[1fr_auto_auto_auto]">
-        <div>
+        <div class="relative">
             <label for="buscar" class="sr-only">Buscar</label>
+            <x-icono nombre="buscar" class="pointer-events-none absolute left-3 top-1/2 size-4 -translate-y-1/2 text-slate-400" />
             <input id="buscar" type="search" wire:model.live.debounce.300ms="buscar"
                 placeholder="Buscar por título o descripción…"
-                class="w-full rounded-md border border-slate-300 px-3 py-2 text-sm focus:border-indigo-500 focus:outline-none focus:ring-2 focus:ring-indigo-200">
+                class="w-full rounded-md border border-slate-300 py-2 pl-9 pr-3 text-sm focus:border-indigo-500 focus:outline-none focus:ring-2 focus:ring-indigo-200">
         </div>
 
         <div>
@@ -60,8 +67,13 @@
         <div class="relative" x-data="{ abierto: false }" x-on:click.outside="abierto = false" x-on:keydown.escape="abierto = false">
             <button type="button" x-on:click="abierto = ! abierto" x-bind:aria-expanded="abierto" aria-haspopup="menu"
                 class="flex w-full items-center justify-between gap-2 rounded-md border border-slate-300 px-3 py-2 text-sm font-medium text-slate-700 hover:bg-slate-100">
-                Filtros rápidos
-                <span class="text-xs transition-transform" x-bind:class="abierto && 'rotate-180'" aria-hidden="true">&#9662;</span>
+                <span class="flex items-center gap-2">
+                    <x-icono nombre="filtro" class="size-4 text-slate-500" />
+                    Filtros rápidos
+                </span>
+                <span class="transition-transform" x-bind:class="abierto && 'rotate-180'">
+                    <x-icono nombre="chevron-abajo" class="size-4" />
+                </span>
             </button>
 
             <div x-show="abierto" x-transition x-cloak role="menu"
@@ -103,11 +115,18 @@
                             @endif
                         </td>
                         <td class="whitespace-nowrap px-5 py-3 text-right">
-                            <button type="button" x-on:click="$wire.editar({{ $producto->id }})"
-                                class="font-medium text-indigo-600 hover:text-indigo-800">Editar</button>
-                            <button type="button"
+                            {{-- Botones solo con icono: el texto queda oculto para lectores de pantalla y como tooltip --}}
+                            <button type="button" x-on:click="$wire.editar({{ $producto->id }})" title="Editar"
+                                class="inline-flex rounded-md p-2 text-indigo-600 hover:bg-indigo-50 hover:text-indigo-800">
+                                <x-icono nombre="editar" />
+                                <span class="sr-only">Editar {{ $producto->titulo }}</span>
+                            </button>
+                            <button type="button" title="Eliminar"
                                 x-on:click="porEliminar = { abierto: true, id: {{ $producto->id }}, titulo: @js($producto->titulo) }"
-                                class="ml-3 font-medium text-red-600 hover:text-red-800">Eliminar</button>
+                                class="inline-flex rounded-md p-2 text-red-600 hover:bg-red-50 hover:text-red-800">
+                                <x-icono nombre="eliminar" />
+                                <span class="sr-only">Eliminar {{ $producto->titulo }}</span>
+                            </button>
                         </td>
                     </tr>
                 @empty
@@ -229,10 +248,17 @@
 
         <div x-show="porEliminar.abierto" x-transition x-trap.noscroll="porEliminar.abierto"
             class="relative w-full max-w-md rounded-lg bg-white p-6 shadow-xl">
-            <h2 id="titulo-modal-eliminar" class="text-lg font-semibold text-slate-900">Eliminar producto</h2>
-            <p class="mt-2 text-sm text-slate-600">
-                ¿Eliminar <strong class="text-slate-900" x-text="porEliminar.titulo"></strong>? Esta acción no se puede deshacer.
-            </p>
+            <div class="flex gap-4">
+                <span class="flex size-10 shrink-0 items-center justify-center rounded-full bg-red-100 text-red-600">
+                    <x-icono nombre="advertencia" />
+                </span>
+                <div>
+                    <h2 id="titulo-modal-eliminar" class="text-lg font-semibold text-slate-900">Eliminar producto</h2>
+                    <p class="mt-1 text-sm text-slate-600">
+                        ¿Eliminar <strong class="text-slate-900" x-text="porEliminar.titulo"></strong>? Esta acción no se puede deshacer.
+                    </p>
+                </div>
+            </div>
 
             <div class="mt-6 flex justify-end gap-2">
                 <button type="button" x-on:click="porEliminar.abierto = false"
