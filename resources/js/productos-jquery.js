@@ -93,7 +93,14 @@ $(function () {
                 )
                 .appendTo($fila);
 
-            $('<td class="px-5 py-3 text-right tabular-nums">').text(formatoPrecio(producto.precio)).appendTo($fila);
+            const $precio = $('<td class="px-5 py-3 text-right tabular-nums">')
+                .append($('<div>').text(formatoPrecio(producto.precio)))
+                .appendTo($fila);
+
+            // precio_usd llega en null cuando el tipo de cambio no está disponible
+            if (producto.precio_usd !== null) {
+                $precio.append($('<div class="text-xs text-slate-500">').text(`≈ ${formatoPrecio(producto.precio_usd)} USD`));
+            }
 
             $('<td class="whitespace-nowrap px-5 py-3 text-right">')
                 .append($('<button type="button" class="btn-editar font-medium text-indigo-600 hover:text-indigo-800">').text('Editar'))

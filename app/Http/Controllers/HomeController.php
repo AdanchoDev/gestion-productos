@@ -4,11 +4,12 @@ namespace App\Http\Controllers;
 
 use App\Models\Categoria;
 use App\Models\Producto;
+use App\Services\TipoCambioService;
 use Illuminate\View\View;
 
 class HomeController extends Controller
 {
-    public function index(): View
+    public function index(TipoCambioService $servicio): View
     {
         $indicadores = [
             'categorias' => Categoria::count(),
@@ -24,6 +25,11 @@ class HomeController extends Controller
             ->limit(5)
             ->get();
 
-        return view('home', compact('indicadores', 'recientes'));
+        return view('home', [
+            'indicadores' => $indicadores,
+            'recientes' => $recientes,
+            'tipoCambio' => $servicio->obtener(),
+            'valorActivoUsd' => $servicio->convertirAUsd($indicadores['valor_activo']),
+        ]);
     }
 }

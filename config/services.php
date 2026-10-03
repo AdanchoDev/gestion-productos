@@ -35,4 +35,19 @@ return [
         ],
     ],
 
+    'banxico' => [
+        'token' => env('BANXICO_TOKEN'),
+        'url' => env('BANXICO_URL', 'https://www.banxico.org.mx/SieAPIRest/service/v1'),
+        // SF43718 es la serie del tipo de cambio FIX (pesos por dólar)
+        'serie' => env('BANXICO_SERIE', 'SF43718'),
+    ],
+
+    'tipo_cambio' => [
+        // API de respaldo, sin credenciales, para cuando no hay token de Banxico o Banxico no responde
+        'url' => env('TIPO_CAMBIO_URL', 'https://api.frankfurter.dev/v1/latest'),
+        'timeout' => (int) env('TIPO_CAMBIO_TIMEOUT', 5),
+        'cache_store' => env('TIPO_CAMBIO_CACHE_STORE', 'redis'),
+        'cache_ttl' => (int) env('TIPO_CAMBIO_CACHE_TTL', 3600),
+    ],
+
 ];

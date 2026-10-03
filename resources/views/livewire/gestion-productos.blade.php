@@ -96,7 +96,12 @@
                         </td>
                         <td class="px-5 py-3">{{ $producto->categoria->nombre }}</td>
                         <td class="px-5 py-3"><x-estatus-badge :estatus="$producto->estatus" /></td>
-                        <td class="px-5 py-3 text-right tabular-nums">${{ number_format($producto->precio, 2) }}</td>
+                        <td class="px-5 py-3 text-right tabular-nums">
+                            <div>${{ number_format($producto->precio, 2) }}</div>
+                            @if (($precioUsd = $tipoCambio->convertirAUsd($producto->precio)) !== null)
+                                <div class="text-xs text-slate-500">≈ ${{ number_format($precioUsd, 2) }} USD</div>
+                            @endif
+                        </td>
                         <td class="whitespace-nowrap px-5 py-3 text-right">
                             <button type="button" x-on:click="$wire.editar({{ $producto->id }})"
                                 class="font-medium text-indigo-600 hover:text-indigo-800">Editar</button>

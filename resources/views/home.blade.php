@@ -20,8 +20,40 @@
         <div class="rounded-lg border border-slate-200 bg-white p-5">
             <dt class="text-sm text-slate-500">Valor del catálogo activo</dt>
             <dd class="mt-1 text-2xl font-semibold tabular-nums text-slate-900">${{ number_format($indicadores['valor_activo'], 2) }} MXN</dd>
+            @if ($valorActivoUsd !== null)
+                <dd class="mt-1 text-sm tabular-nums text-slate-500">≈ ${{ number_format($valorActivoUsd, 2) }} USD</dd>
+            @endif
         </div>
     </dl>
+
+    @if (session('estado'))
+        <div role="status" class="mt-6 rounded-md border border-sky-200 bg-sky-50 px-4 py-3 text-sm text-sky-800">
+            {{ session('estado') }}
+        </div>
+    @endif
+
+    <section class="mt-6 flex flex-wrap items-center justify-between gap-4 rounded-lg border border-slate-200 bg-white p-5">
+        <div>
+            <h2 class="text-sm text-slate-500">Tipo de cambio USD/MXN</h2>
+            @if ($tipoCambio)
+                <p class="mt-1 text-2xl font-semibold tabular-nums text-slate-900">1 USD = ${{ number_format($tipoCambio['tasa'], 4) }} MXN</p>
+                <p class="mt-1 text-sm text-slate-500">
+                    Fuente: {{ $tipoCambio['fuente'] ?? 'API externa' }} · publicado el {{ \Illuminate\Support\Carbon::parse($tipoCambio['fecha'])->format('d/m/Y') }}
+                    · consultado a la API el {{ \Illuminate\Support\Carbon::parse($tipoCambio['consultado'])->format('d/m/Y H:i') }} y guardado en caché
+                </p>
+            @else
+                <p class="mt-1 text-lg font-medium text-slate-900">No disponible</p>
+                <p class="mt-1 text-sm text-slate-500">No se pudo consultar la API de tipo de cambio; los precios se muestran solo en MXN.</p>
+            @endif
+        </div>
+
+        <form method="POST" action="{{ route('tipo-cambio.actualizar') }}">
+            @csrf
+            <button type="submit" class="rounded-md border border-slate-300 px-4 py-2 text-sm font-medium text-slate-700 hover:bg-slate-100">
+                Actualizar ahora
+            </button>
+        </form>
+    </section>
 
     <section class="mt-8 rounded-lg border border-slate-200 bg-white">
         <div class="flex items-center justify-between border-b border-slate-200 px-5 py-4">

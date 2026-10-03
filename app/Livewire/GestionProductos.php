@@ -5,6 +5,7 @@ namespace App\Livewire;
 use App\Livewire\Forms\ProductoForm;
 use App\Models\Categoria;
 use App\Models\Producto;
+use App\Services\TipoCambioService;
 use Illuminate\Pagination\LengthAwarePaginator;
 use Illuminate\View\View;
 use Livewire\Attributes\Title;
@@ -125,6 +126,7 @@ class GestionProductos extends Component
         return view('livewire.gestion-productos', [
             'productos' => $this->productos(),
             'categorias' => Categoria::orderBy('nombre')->get(),
+            'tipoCambio' => app(TipoCambioService::class),
         ]);
     }
 }

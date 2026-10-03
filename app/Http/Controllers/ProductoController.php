@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Http\Requests\ProductoRequest;
 use App\Models\Categoria;
 use App\Models\Producto;
+use App\Services\TipoCambioService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Validation\Rule;
@@ -82,6 +83,7 @@ class ProductoController extends Controller
             'categoria' => $producto->categoria->nombre,
             'estatus' => $producto->estatus,
             'precio' => $producto->precio,
+            'precio_usd' => app(TipoCambioService::class)->convertirAUsd($producto->precio),
         ];
     }
 }
