@@ -40,6 +40,20 @@ class Producto extends Model
         ];
     }
 
+    /**
+     * Datos que el carrito del portal necesita. El precio va en centavos enteros
+     * para que el navegador sume sin errores de redondeo. Requiere la categoría cargada.
+     */
+    public function datosCarrito(): array
+    {
+        return [
+            'id' => $this->id,
+            'titulo' => $this->titulo,
+            'categoria' => $this->categoria->nombre,
+            'precio_centavos' => (int) round($this->precio * 100),
+        ];
+    }
+
     // Reglas compartidas por el formulario de Livewire y por el CRUD con jQuery
     public static function reglasValidacion(): array
     {
@@ -49,7 +63,9 @@ class Producto extends Model
             // withoutTrashed: no se puede asignar un producto a una categoría eliminada
             'categoria_id' => ['required', Rule::exists('categorias', 'id')->withoutTrashed()],
             'estatus' => ['required', Rule::in(self::ESTATUS)],
-            'precio' => ['required', 'numeric', 'min:0', 'max:99999999.99'],
+            // decimal:0,2 rechaza más de 2 decimales (MySQL los redondearía sin avisar) y la notación
+            // científica como 1e3; gt:0 impide precios en cero; el máximo es el de la columna decimal(10,2)
+            'precio' => ['required', 'numeric', 'decimal:0,2', 'gt:0', 'max:99999999.99'],
         ];
     }
 
@@ -66,8 +82,9 @@ class Producto extends Model
             'estatus.in' => 'El estatus seleccionado no es válido.',
             'precio.required' => 'El precio es obligatorio.',
             'precio.numeric' => 'El precio debe ser un número.',
-            'precio.min' => 'El precio no puede ser negativo.',
-            'precio.max' => 'El precio es demasiado alto.',
+            'precio.decimal' => 'Escribe el precio solo con números y máximo 2 decimales, por ejemplo 1234.50.',
+            'precio.gt' => 'El precio debe ser mayor a $0.',
+            'precio.max' => 'El precio no puede superar $99,999,999.99.',
         ];
     }
 

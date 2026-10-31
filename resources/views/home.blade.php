@@ -19,9 +19,9 @@
         </div>
         <div class="rounded-lg border border-slate-200 bg-white p-5">
             <dt class="flex items-center gap-2 text-sm text-slate-500"><x-icono nombre="dinero" class="size-4" />Valor del catálogo activo</dt>
-            <dd class="mt-1 text-2xl font-semibold tabular-nums text-slate-900">${{ number_format($indicadores['valor_activo'], 2) }} MXN</dd>
+            <dd class="mt-1 text-2xl font-semibold tabular-nums text-slate-900"><x-precio :valor="$indicadores['valor_activo']" moneda="MXN" /></dd>
             @if ($valorActivoUsd !== null)
-                <dd class="mt-1 text-sm tabular-nums text-slate-500">≈ ${{ number_format($valorActivoUsd, 2) }} USD</dd>
+                <dd class="mt-1 text-sm tabular-nums text-slate-500">≈ <x-precio :valor="$valorActivoUsd" moneda="USD" /></dd>
             @endif
         </div>
     </dl>
@@ -84,7 +84,7 @@
                                 </a>
                             </td>
                             <td class="px-5 py-3"><x-estatus-badge :estatus="$producto->estatus" /></td>
-                            <td class="px-5 py-3 text-right tabular-nums">${{ number_format($producto->precio, 2) }}</td>
+                            <td class="px-5 py-3 text-right tabular-nums"><x-precio :valor="$producto->precio" /></td>
                         </tr>
                     @empty
                         <tr>

@@ -7,25 +7,19 @@ use App\Models\Categoria;
 use App\Models\Producto;
 use App\Services\TipoCambioService;
 use Illuminate\Pagination\LengthAwarePaginator;
+use Illuminate\Support\Str;
 use Illuminate\View\View;
-use Livewire\Attributes\Title;
-use Livewire\Attributes\Url;
 use Livewire\Component;
 use Livewire\WithPagination;
 
-#[Title('Productos')]
 class GestionProductos extends Component
 {
     use WithPagination;
 
-    // #[Url] sincroniza el filtro con la barra de direcciones para poder compartir o recargar la búsqueda
-    #[Url(except: '')]
     public string $buscar = '';
 
-    #[Url(except: '')]
     public string $estatus = '';
 
-    #[Url(as: 'categoria', except: '')]
     public string $categoriaId = '';
 
     public ProductoForm $form;
@@ -44,11 +38,28 @@ class GestionProductos extends Component
         }
     }
 
-    // Al cambiar cualquier filtro se regresa a la página 1; si no, podría quedar en una página que ya no existe
+    // Filtros que se reflejan en la barra de direcciones, para poder recargar o compartir la búsqueda.
+    // except: no se escriben en la URL cuando están vacíos; as: nombre que se ve en la URL.
+    protected function queryString(): array
+    {
+        return [
+            'buscar' => ['except' => ''],
+            'estatus' => ['except' => ''],
+            'categoriaId' => ['as' => 'categoria', 'except' => ''],
+        ];
+    }
+
+    // Se ejecuta cada vez que cambia una propiedad desde la vista
     public function updated(string $propiedad): void
     {
+        // Al cambiar un filtro se regresa a la página 1; si no, podría quedar en una página que ya no existe
         if (in_array($propiedad, ['buscar', 'estatus', 'categoriaId'])) {
             $this->resetPage();
+        }
+
+        // Validación en tiempo real: al salir de un campo del formulario se valida solo ese campo
+        if (Str::startsWith($propiedad, 'form.')) {
+            $this->form->validateOnly(Str::after($propiedad, 'form.'));
         }
     }
 
@@ -127,6 +138,6 @@ class GestionProductos extends Component
             'productos' => $this->productos(),
             'categorias' => Categoria::orderBy('nombre')->get(),
             'tipoCambio' => app(TipoCambioService::class),
-        ]);
+        ])->title('Productos'); // título de la pestaña del navegador
     }
 }

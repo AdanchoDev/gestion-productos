@@ -3,27 +3,21 @@
 namespace App\Livewire\Forms;
 
 use App\Models\Producto;
-use Livewire\Attributes\Validate;
 use Livewire\Form;
 
 class ProductoForm extends Form
 {
     public ?Producto $producto = null;
 
-    // #[Validate] sin reglas activa la validación en tiempo real usando las de rules()
-    #[Validate]
+    // La validación en tiempo real de estos campos la dispara updated() en GestionProductos
     public string $titulo = '';
 
-    #[Validate]
     public string $descripcion = '';
 
-    #[Validate]
     public string $categoria_id = '';
 
-    #[Validate]
     public string $estatus = Producto::ESTATUS_ACTIVO;
 
-    #[Validate]
     public string $precio = '';
 
     public function rules(): array

@@ -114,9 +114,9 @@
                         <td class="hidden px-3 py-3 sm:table-cell sm:px-5">{{ $producto->categoria->nombre }}</td>
                         <td class="hidden px-3 py-3 sm:table-cell sm:px-5"><x-estatus-badge :estatus="$producto->estatus" /></td>
                         <td class="px-3 py-3 sm:px-5 text-right tabular-nums">
-                            <div>${{ number_format($producto->precio, 2) }}</div>
+                            <div><x-precio :valor="$producto->precio" /></div>
                             @if (($precioUsd = $tipoCambio->convertirAUsd($producto->precio)) !== null)
-                                <div class="text-xs text-slate-500">≈ ${{ number_format($precioUsd, 2) }} USD</div>
+                                <div class="text-xs text-slate-500">≈ <x-precio :valor="$precioUsd" moneda="USD" /></div>
                             @endif
                         </td>
                         <td class="whitespace-nowrap px-3 py-3 sm:px-5 text-right">
@@ -220,7 +220,7 @@
 
                 <div>
                     <label for="precio" class="mb-1 block text-sm font-medium text-slate-700">Precio (MXN)</label>
-                    <input id="precio" type="number" step="0.01" min="0" inputmode="decimal" wire:model.blur="form.precio"
+                    <input id="precio" type="number" step="0.01" min="0.01" inputmode="decimal" wire:model.blur="form.precio"
                         @class([
                             'w-full rounded-md border px-3 py-2 text-sm focus:outline-none focus:ring-2',
                             'border-red-400 focus:ring-red-200' => $errors->has('form.precio'),

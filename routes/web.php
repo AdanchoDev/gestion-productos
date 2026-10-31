@@ -5,6 +5,7 @@ use App\Http\Controllers\HomeController;
 use App\Http\Controllers\ProductoController;
 use App\Http\Controllers\TipoCambioController;
 use App\Livewire\GestionProductos;
+use App\Livewire\Portal;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/', [HomeController::class, 'index'])->name('home');
@@ -12,6 +13,9 @@ Route::get('/', [HomeController::class, 'index'])->name('home');
 Route::post('/tipo-cambio/actualizar', [TipoCambioController::class, 'actualizar'])->name('tipo-cambio.actualizar');
 
 Route::get('/productos', GestionProductos::class)->name('productos.index');
+
+// Portal público: catálogo de productos activos con carrito
+Route::get('/portal', Portal::class)->name('portal.index');
 
 // CRUD en Blade + jQuery: una ruta entrega la vista y el resto responde JSON
 Route::controller(ProductoController::class)

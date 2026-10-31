@@ -1,4 +1,5 @@
 import $ from 'jquery';
+import { formatoPrecio } from './formato';
 
 $(function () {
     const $crud = $('#crud-productos');
@@ -140,10 +141,6 @@ $(function () {
         $('#btn-siguiente').prop('disabled', pagina >= ultimaPagina);
     }
 
-    function formatoPrecio(precio) {
-        return '$' + Number(precio).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
-    }
-
     /* ---------- Filtros y paginación ---------- */
 
     // Espera 300 ms tras la última tecla para no lanzar una petición por cada letra
@@ -198,7 +195,12 @@ $(function () {
         precio(valor) {
             if (valor === '') return 'El precio es obligatorio.';
             if (isNaN(Number(valor))) return 'El precio debe ser un número.';
-            if (Number(valor) < 0) return 'El precio no puede ser negativo.';
+            // Solo dígitos y hasta 2 decimales: rechaza 10.999 y la notación científica (1e3)
+            if (!/^-?\d+(\.\d{1,2})?$/.test(valor)) {
+                return 'Escribe el precio solo con números y máximo 2 decimales, por ejemplo 1234.50.';
+            }
+            if (Number(valor) <= 0) return 'El precio debe ser mayor a $0.';
+            if (Number(valor) > 99999999.99) return 'El precio no puede superar $99,999,999.99.';
             return null;
         },
     };

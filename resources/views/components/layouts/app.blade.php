@@ -38,6 +38,11 @@
                     'bg-indigo-50 text-indigo-700' => request()->routeIs('categorias.*'),
                     'text-slate-600 hover:bg-slate-100' => ! request()->routeIs('categorias.*'),
                 ])><x-icono nombre="categoria" class="size-4" />Categorías</a>
+                <a href="{{ route('portal.index') }}" @class([
+                    'inline-flex shrink-0 items-center gap-2 whitespace-nowrap rounded-md px-3 py-2',
+                    'bg-indigo-50 text-indigo-700' => request()->routeIs('portal.*'),
+                    'text-slate-600 hover:bg-slate-100' => ! request()->routeIs('portal.*'),
+                ])><x-icono nombre="tienda" class="size-4" />Portal</a>
             </nav>
         </div>
     </header>

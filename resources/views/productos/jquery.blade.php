@@ -154,7 +154,7 @@
 
                     <div>
                         <label for="precio" class="mb-1 block text-sm font-medium text-slate-700">Precio (MXN)</label>
-                        <input id="precio" name="precio" type="number" step="0.01" min="0" inputmode="decimal"
+                        <input id="precio" name="precio" type="number" step="0.01" min="0.01" inputmode="decimal"
                             class="campo w-full rounded-md border border-slate-300 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-200">
                         <p class="error mt-1 text-sm text-red-600" data-error="precio" hidden></p>
                     </div>

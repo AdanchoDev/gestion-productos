@@ -2,7 +2,7 @@
 
 Mini sistema de gestión de productos con categorías, desarrollado como evaluación técnica para la posición de Programador Full Stack.
 
-Incluye el mismo CRUD de productos implementado de dos formas (Livewire 3 + Alpine.js y Blade + jQuery), un CRUD de categorías con el flujo MVC clásico y la conversión de precios a dólares con el tipo de cambio de Banxico cacheado en Redis.
+Incluye el mismo CRUD de productos implementado de dos formas (Livewire 3 + Alpine.js y Blade + jQuery), un CRUD de categorías con el flujo MVC clásico, un portal público con carrito y la conversión de precios a dólares con el tipo de cambio de Banxico cacheado en Redis.
 
 ## Stack
 
@@ -129,6 +129,7 @@ Laravel guarda la caché en la base lógica 1. El botón "Actualizar ahora" del 
 | --- | --- | --- | --- |
 | GET | `/` | `home` | `HomeController@index` |
 | GET | `/productos` | `productos.index` | Componente Livewire `GestionProductos` |
+| GET | `/portal` | `portal.index` | Componente Livewire `Portal` (portal público con carrito) |
 | GET | `/productos-jquery` | `jquery.productos.index` | `ProductoController@index` |
 | GET | `/productos-jquery/datos` | `jquery.productos.datos` | `ProductoController@datos` (JSON) |
 | POST | `/productos-jquery` | `jquery.productos.store` | `ProductoController@store` (JSON) |
@@ -168,7 +169,7 @@ Si la validación falla, el formulario se vuelve a mostrar con el mensaje bajo e
 
 ### C. Livewire 3 y Alpine.js
 
-- Componente: `app/Livewire/GestionProductos.php` (`mount`, `save`, `delete`, filtros con `#[Url]`, paginación).
+- Componente: `app/Livewire/GestionProductos.php` (`mount`, `save`, `delete`, filtros en la URL con `queryString()`, paginación).
 - Formulario y validación en tiempo real: `app/Livewire/Forms/ProductoForm.php`.
 - Vista: `resources/views/livewire/gestion-productos.blade.php`. Alpine.js se usa en:
   - Modal del formulario: `x-data`, `x-show`, `$wire.entangle`.
@@ -189,6 +190,17 @@ Si la validación falla, el formulario se vuelve a mostrar con el mensaje bajo e
 - Configuración: `config/services.php` (claves `banxico` y `tipo_cambio`).
 - Se muestra en el inicio y como equivalente en USD en ambos CRUD.
 
+## Portal público con carrito
+
+Una vista pública del catálogo, fuera de lo que pide la evaluación. Muestra solo productos activos, con buscador y filtro por categoría, y permite armar un carrito con cantidades y ver el total al instante en MXN y USD.
+
+- Componente: `app/Livewire/Portal.php`, con su propio layout sin el menú de administración (`resources/views/components/layouts/portal.blade.php`).
+- Vista: `resources/views/livewire/portal.blade.php`.
+- Lógica del carrito: `resources/js/carrito.js`. Se registra como `Alpine.store('carrito')` y `Alpine.data(...)` en un script; la vista solo enlaza métodos y propiedades con directivas.
+- El carrito se guarda en el `localStorage` del navegador con `$persist`; no se envía al servidor.
+- Al abrir el carrito, Alpine pide a Livewire (`preciosVigentes`) los precios actuales: actualiza los que cambiaron y quita los productos que ya no están activos, avisando al visitante.
+- "Finalizar compra" está deshabilitado: el pago y el IVA se agregarán al integrar un broker bancario.
+
 ## Pruebas
 
 El proyecto no incluye pruebas automatizadas. Es un tema en el que todavía me falta profundizar, y preferí no entregar pruebas que no pudiera explicar y mantener con seguridad. Para esta evaluación la verificación fue manual, en el navegador, sobre MySQL y Redis locales.
@@ -199,6 +211,8 @@ Lo que se revisó manualmente:
 - **CRUD de categorías:** alta, edición y baja; nombre duplicado; intento de eliminar una categoría con productos.
 - **Eliminado lógico:** al eliminar desde las tres pantallas, el registro desaparece de los listados y la fila permanece en la tabla con fecha en `deleted_at`; se puede volver a crear una categoría con el nombre de una eliminada.
 - **Tipo de cambio:** respuesta real de Banxico, lectura desde Redis en la segunda consulta, y comportamiento con Redis apagado, sin token y con la API sin responder.
+- **Precios:** valores con más de 2 decimales, notación científica (`1e3`), cero, negativos y por encima del máximo, en el formulario de Livewire y en el de jQuery.
+- **Portal y carrito:** agregar artículos, cambiar cantidades (incluidos valores vacíos, negativos, con decimales y por encima del máximo), totales en MXN y USD, persistencia al recargar la página, y actualización al abrir el carrito tras cambiar un precio y desactivar un producto.
 - **Interfaz:** ancho de escritorio y de celular (375 px), y modo oscuro del sistema operativo.
 
 
@@ -213,9 +227,14 @@ Lo que se revisó manualmente:
 - **Categorías con MVC clásico, no con Livewire:** el CRUD de categorías usa a propósito un controlador de recursos (`Route::resource`), un `FormRequest` y vistas Blade con formularios que recargan la página. Livewire + Alpine (bloque C) y jQuery (bloque D) ya quedan demostrados con los dos CRUD de productos; hacer categorías de la forma tradicional cubre el bloque B con un CRUD completo y no solo con la pantalla de inicio. Así el proyecto muestra las tres formas de resolver un CRUD en Laravel.
 - **`Route::resource` para categorías:** una sola línea registra las rutas estándar de un CRUD con las URL, verbos y nombres que Laravel usa por convención, y el controlador sigue esos mismos nombres de método (`index`, `create`, `store`, `edit`, `update`, `destroy`). Se excluye `show` porque no hay página de detalle. Las rutas del CRUD con jQuery, en cambio, están escritas una por una dentro de un grupo, porque incluyen una que no es estándar (`/datos`); así el archivo de rutas muestra las dos formas.
 - **Un CRUD de categorías en lugar de reportes:** la primera versión tenía un `ReporteController` de solo lectura con el resumen por categoría. Se reemplazó por el CRUD porque las categorías solo podían crearse desde el seeder; el listado muestra cuántos productos tiene cada categoría, con enlace al listado filtrado.
+- **Precios validados con exactitud:** `decimal:0,2` rechaza más de 2 decimales (MySQL los redondearía sin avisar) y la notación científica; `gt:0` impide precios en cero; el máximo coincide con la columna `decimal(10,2)`. El formulario de jQuery aplica las mismas reglas en el navegador.
+- **Formato de precios en un solo lugar:** el componente `<x-precio>` en las vistas Blade y `resources/js/formato.js` en los scripts.
+- **Carrito en centavos enteros:** en JavaScript `0.1 + 0.2` da `0.30000000000000004`; el servidor entrega cada precio en centavos (`Producto::datosCarrito()`) y el navegador suma enteros. Las cantidades se normalizan a enteros de 1 a 99.
+- **El carrito no confía en lo guardado en el navegador:** los precios se vuelven a pedir al servidor al abrirlo. Cuando se agregue el pago, el servidor deberá recalcular el total y no aceptar el que envíe el navegador.
 - **Reglas de validación en un solo lugar:** `Producto::reglasValidacion()` y `Producto::mensajesValidacion()` las comparten el formulario de Livewire y el `FormRequest` del CRUD con jQuery, para que ambos se comporten igual.
 - **Listados sin N+1:** el número de productos de cada categoría se obtiene con una subconsulta (`withCount`) y los listados de productos cargan su categoría con `with()`.
-- **Filtros de Livewire en la URL (`#[Url]`):** la búsqueda sobrevive a una recarga y se puede compartir.
+- **Filtros de Livewire en la URL (`queryString()`):** la búsqueda sobrevive a una recarga y se puede compartir.
+- **Sin atributos de PHP (`#[...]`) en los componentes:** el título, el layout, los filtros en la URL, la validación en tiempo real y el método del carrito que no vuelve a renderizar se configuran con código normal (`->title()`, `->layout()`, `queryString()`, `updated()` con `validateOnly()` y `skipRender()`). Hacen lo mismo que los atributos equivalentes de Livewire, pero se leen como métodos comunes.
 - **Estado de interfaz en Alpine, datos en Livewire:** abrir un menú o un modal de confirmación no hace peticiones al servidor; solo se llama cuando hay que leer o guardar datos.
 - **jQuery construye las filas con `.text()`:** el contenido capturado por el usuario nunca se interpreta como HTML.
 - **Banxico como fuente principal y una API de respaldo:** el FIX es el tipo de cambio oficial, pero requiere token; con el respaldo el proyecto se puede evaluar sin credenciales.
@@ -226,6 +245,7 @@ Lo que se revisó manualmente:
 ### Interfaz
 
 - **Iconos sin dependencias:** el componente `resources/views/components/icono.blade.php` reúne los SVG y se usa como `<x-icono nombre="editar" />`. Los iconos de interfaz son de [Heroicons](https://heroicons.com) (licencia MIT) y los logos de Livewire y jQuery del menú son de [Simple Icons](https://simpleicons.org) (CC0). Como las filas del CRUD con jQuery las arma JavaScript, la vista deja los iconos en etiquetas `<template>` y el script los clona. Los botones que solo tienen icono llevan un texto oculto para lectores de pantalla.
+- **Alpine en scripts para la lógica del carrito:** `Alpine.store` y `Alpine.data` se registran en `resources/js/carrito.js` durante el evento `alpine:init`, antes de que Livewire arranque Alpine. El panel lleva `wire:ignore` para que Livewire no lo reemplace al filtrar o paginar, y dentro de él se usa `x-bind:hidden` en lugar de `x-show`, porque los `x-show` anidados en un panel que se cierra y se reabre podían quedarse visibles.
 - **Diseño adaptable a celular:** en pantallas chicas el menú pasa debajo del título y las tablas de los CRUD ocultan las columnas secundarias, mostrando ese dato bajo el nombre para no tener que desplazarse de lado.
 - **Paginación en español:** Laravel no incluye traducciones; los textos del paginador están en `lang/es/pagination.php` y `lang/es.json`.
 - **Solo tema claro:** el paginador de Laravel trae estilos para modo oscuro que Tailwind activa según el sistema operativo, mientras el resto de la aplicación no los tiene. Se desactivó esa detección en `resources/css/app.css` para que la interfaz se vea igual en cualquier equipo.
